@@ -1,0 +1,94 @@
+{
+  "second_opinion": {
+    "treatment_necessary": {
+      "dengue_case": {
+        "summary": "Based on the test results showing positive Dengue NS1 Antigen and low platelet count (75,000), hospitalization was medically necessary. Dengue fever with thrombocytopenia requires close monitoring and supportive care.",
+        "appropriateness": "APPROPRIATE",
+        "recommendations": [
+          "Hospitalization was necessary due to low platelet count",
+          "ICU admission was justified when platelets dropped to 75,000",
+          "Platelet transfusion was appropriate medical intervention",
+          "Continue monitoring platelet count post-discharge"
+        ],
+        "questions_for_doctor": [
+          "What is the expected timeline for complete platelet recovery?",
+          "Are there any dietary restrictions during recovery?",
+          "What warning signs should I watch for at home?",
+          "When should I schedule the follow-up appointment?"
+        ]
+      }
+    },
+    "tests_excessive": {
+      "dengue_case": {
+        "summary": "Most tests ordered were medically appropriate. However, some concerns were identified regarding test timing and duplication.",
+        "appropriateness": "MOSTLY_APPROPRIATE",
+        "recommendations": [
+          "CBC tests were necessary for monitoring platelet levels",
+          "⚠️ CT Scan ordered at 11:59 PM may not have been urgent",
+          "⚠️ Duplicate CBC on day 6 may have been unnecessary",
+          "Dengue antigen test was appropriate for diagnosis"
+        ],
+        "questions_for_doctor": [
+          "Was the late-night CT scan medically urgent?",
+          "Why was another CBC needed on the day before discharge?",
+          "Were there any findings in the CT scan that affected treatment?"
+        ]
+      }
+    },
+    "explain_simple": {
+      "dengue_case": {
+        "summary": "You were diagnosed with Dengue fever, a viral infection transmitted by mosquitoes. The main concern was your low platelet count, which helps blood clot. Here's what happened in simple terms:",
+        "appropriateness": "INFORMATIONAL",
+        "recommendations": [
+          "**Day 1-2**: You came in with fever and body pain. Blood tests confirmed dengue and showed low platelets.",
+          "**Day 3**: Your platelet count dropped further, so you were moved to ICU for closer monitoring.",
+          "**Day 4**: You received platelet transfusion to boost your levels.",
+          "**Day 5-6**: Your platelets improved, you were moved to general ward, and prepared for discharge.",
+          "**Recovery**: Continue rest, fluids, and follow-up in one week to ensure full recovery."
+        ],
+        "questions_for_doctor": [
+          "How long will it take for my platelet count to return to normal?",
+          "What activities should I avoid during recovery?",
+          "Is there a risk of dengue hemorrhagic fever?"
+        ]
+      }
+    }
+  },
+  "fraud_analysis": {
+    "high_fraud_score": {
+      "explanation": "The bill analysis has identified several concerning patterns that suggest potential overcharging:",
+      "findings": [
+        {
+          "category": "Timing Irregularity",
+          "description": "CT Scan ordered at 11:59 PM - This is a known dark pattern to charge for an additional day",
+          "severity": "HIGH",
+          "impact": "₹3,000 - ₹5,000 potential unnecessary charge"
+        },
+        {
+          "category": "Overpricing",
+          "description": "ICU bed charges at ₹8,000/day exceed standard rates of ₹5,000-7,000",
+          "severity": "HIGH",
+          "impact": "₹1,000 - ₹3,000 overcharge per day"
+        },
+        {
+          "category": "Excessive Consumables",
+          "description": "5 PPE kits charged at ₹500 each - Typically not chargeable or much lower cost",
+          "severity": "MEDIUM",
+          "impact": "₹2,000 - ₹2,500 potential overcharge"
+        },
+        {
+          "category": "Unit Price Inflation",
+          "description": "Gloves charged at ₹50/pair instead of standard ₹10-20",
+          "severity": "MEDIUM",
+          "impact": "₹600 overcharge (20 pairs × ₹30 excess)"
+        },
+        {
+          "category": "Duplicate Testing",
+          "description": "Multiple CBC tests ordered in quick succession without clear medical need",
+          "severity": "LOW",
+          "impact": "₹200 - ₹400 potential unnecessary charge"
+        }
+      ]
+    }
+  }
+}

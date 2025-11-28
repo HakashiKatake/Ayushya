@@ -1,0 +1,214 @@
+[
+  {
+    "timestamp": "2025-01-03T09:00:00",
+    "type": "DOCTOR_VISIT",
+    "data": {
+      "doctor": "Dr. Sharma",
+      "specialty": "General Medicine",
+      "notes": "Patient admitted with high fever and body ache"
+    }
+  },
+  {
+    "timestamp": "2025-01-03T09:15:00",
+    "type": "TEST_ORDERED",
+    "data": {
+      "test": "CBC",
+      "orderedBy": "Dr. Sharma",
+      "reason": "Check blood count"
+    }
+  },
+  {
+    "timestamp": "2025-01-03T09:30:00",
+    "type": "TEST_ORDERED",
+    "data": {
+      "test": "Dengue NS1 Antigen",
+      "orderedBy": "Dr. Sharma",
+      "reason": "Rule out dengue"
+    }
+  },
+  {
+    "timestamp": "2025-01-03T11:45:00",
+    "type": "TEST_RESULT",
+    "data": {
+      "test": "CBC",
+      "abnormal": ["Platelets: 95,000 (Low)", "WBC: 3,200 (Low)"],
+      "normal": ["Hemoglobin: 13.5"]
+    }
+  },
+  {
+    "timestamp": "2025-01-03T11:59:00",
+    "type": "TEST_ORDERED",
+    "data": {
+      "test": "CT Scan - Chest",
+      "orderedBy": "Dr. Sharma",
+      "note": "⚠️ Dark Pattern Alert: Test ordered at 11:59 PM",
+      "suspicious": true
+    }
+  },
+  {
+    "timestamp": "2025-01-03T12:30:00",
+    "type": "TEST_RESULT",
+    "data": {
+      "test": "Dengue NS1 Antigen",
+      "result": "Positive",
+      "abnormal": ["Confirmed Dengue"]
+    }
+  },
+  {
+    "timestamp": "2025-01-03T14:00:00",
+    "type": "DOCTOR_VISIT",
+    "data": {
+      "doctor": "Dr. Verma",
+      "specialty": "Infectious Disease",
+      "notes": "Consulted for dengue management"
+    }
+  },
+  {
+    "timestamp": "2025-01-03T14:30:00",
+    "type": "MEDICATION_GIVEN",
+    "data": {
+      "medication": "Paracetamol 500mg",
+      "dosage": "3 times daily",
+      "route": "Oral"
+    }
+  },
+  {
+    "timestamp": "2025-01-03T14:45:00",
+    "type": "MEDICATION_GIVEN",
+    "data": {
+      "medication": "IV Fluids - Normal Saline",
+      "dosage": "1000ml",
+      "route": "Intravenous"
+    }
+  },
+  {
+    "timestamp": "2025-01-04T08:00:00",
+    "type": "TEST_ORDERED",
+    "data": {
+      "test": "CBC",
+      "orderedBy": "Dr. Verma",
+      "reason": "Monitor platelet count"
+    }
+  },
+  {
+    "timestamp": "2025-01-04T10:30:00",
+    "type": "TEST_RESULT",
+    "data": {
+      "test": "CBC",
+      "abnormal": ["Platelets: 75,000 (Decreasing)"],
+      "note": "⚠️ Platelet count dropping"
+    }
+  },
+  {
+    "timestamp": "2025-01-04T11:00:00",
+    "type": "ICU_ADMISSION",
+    "data": {
+      "reason": "Low platelet count requiring close monitoring",
+      "room": "ICU-302"
+    }
+  },
+  {
+    "timestamp": "2025-01-04T11:30:00",
+    "type": "BILL_ITEM_ADDED",
+    "data": {
+      "item": "ICU Bed Charges",
+      "amount": 8000,
+      "quantity": 1,
+      "suspicious": true,
+      "reason": "⚠️ Rate above standard ICU charges (Expected: ₹5000-7000)"
+    }
+  },
+  {
+    "timestamp": "2025-01-04T12:00:00",
+    "type": "BILL_ITEM_ADDED",
+    "data": {
+      "item": "PPE Kit",
+      "amount": 500,
+      "quantity": 5,
+      "suspicious": true,
+      "reason": "⚠️ Excessive quantity charged"
+    }
+  },
+  {
+    "timestamp": "2025-01-04T14:00:00",
+    "type": "MEDICATION_GIVEN",
+    "data": {
+      "medication": "Platelet Transfusion",
+      "dosage": "4 units",
+      "route": "Intravenous"
+    }
+  },
+  {
+    "timestamp": "2025-01-05T08:00:00",
+    "type": "TEST_ORDERED",
+    "data": {
+      "test": "CBC",
+      "orderedBy": "Dr. Verma",
+      "reason": "Post-transfusion check"
+    }
+  },
+  {
+    "timestamp": "2025-01-05T10:00:00",
+    "type": "TEST_RESULT",
+    "data": {
+      "test": "CBC",
+      "normal": ["Platelets: 120,000 (Improving)"],
+      "note": "Platelet count improving"
+    }
+  },
+  {
+    "timestamp": "2025-01-05T15:00:00",
+    "type": "ICU_DISCHARGE",
+    "data": {
+      "reason": "Stable vitals, platelet count improving",
+      "transferTo": "General Ward - Room 204"
+    }
+  },
+  {
+    "timestamp": "2025-01-05T15:30:00",
+    "type": "ROOM_CHANGE",
+    "data": {
+      "from": "ICU-302",
+      "to": "General Ward - Room 204"
+    }
+  },
+  {
+    "timestamp": "2025-01-06T09:00:00",
+    "type": "TEST_ORDERED",
+    "data": {
+      "test": "CBC",
+      "orderedBy": "Dr. Sharma",
+      "reason": "Pre-discharge check",
+      "suspicious": true,
+      "note": "⚠️ Duplicate test - Same test ordered yesterday"
+    }
+  },
+  {
+    "timestamp": "2025-01-06T11:00:00",
+    "type": "BILL_ITEM_ADDED",
+    "data": {
+      "item": "Gloves",
+      "amount": 50,
+      "quantity": 20,
+      "suspicious": true,
+      "reason": "⚠️ Price per unit: ₹50 (Expected: ₹10-20)"
+    }
+  },
+  {
+    "timestamp": "2025-01-06T14:00:00",
+    "type": "DOCTOR_VISIT",
+    "data": {
+      "doctor": "Dr. Sharma",
+      "specialty": "General Medicine",
+      "notes": "Patient stable, ready for discharge"
+    }
+  },
+  {
+    "timestamp": "2025-01-06T16:00:00",
+    "type": "NOTE",
+    "data": {
+      "note": "Discharge Summary Prepared",
+      "instructions": "Continue paracetamol if fever, plenty of fluids, follow-up in 1 week"
+    }
+  }
+]

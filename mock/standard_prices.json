@@ -1,0 +1,56 @@
+{
+  "tests": {
+    "CBC": { "min": 200, "max": 400, "category": "Blood Test" },
+    "Dengue NS1 Antigen": { "min": 800, "max": 1200, "category": "Blood Test" },
+    "Dengue IgG/IgM": { "min": 700, "max": 1000, "category": "Blood Test" },
+    "CT Scan - Chest": { "min": 3000, "max": 5000, "category": "Imaging" },
+    "CT Scan - Abdomen": { "min": 3500, "max": 5500, "category": "Imaging" },
+    "MRI - Brain": { "min": 5000, "max": 8000, "category": "Imaging" },
+    "X-Ray - Chest": { "min": 300, "max": 600, "category": "Imaging" },
+    "Ultrasound - Abdomen": { "min": 800, "max": 1500, "category": "Imaging" },
+    "ECG": { "min": 150, "max": 300, "category": "Diagnostic" },
+    "ECHO": { "min": 1200, "max": 2000, "category": "Diagnostic" },
+    "Liver Function Test": { "min": 400, "max": 700, "category": "Blood Test" },
+    "Kidney Function Test": { "min": 400, "max": 700, "category": "Blood Test" },
+    "Thyroid Profile": { "min": 500, "max": 800, "category": "Blood Test" },
+    "Blood Sugar Fasting": { "min": 80, "max": 150, "category": "Blood Test" },
+    "HbA1c": { "min": 300, "max": 500, "category": "Blood Test" }
+  },
+  "medications": {
+    "Paracetamol 500mg": { "min": 2, "max": 5, "category": "Analgesic", "unit": "tablet" },
+    "Paracetamol 650mg": { "min": 3, "max": 6, "category": "Analgesic", "unit": "tablet" },
+    "Ibuprofen 400mg": { "min": 3, "max": 7, "category": "Analgesic", "unit": "tablet" },
+    "Amoxicillin 500mg": { "min": 5, "max": 12, "category": "Antibiotic", "unit": "capsule" },
+    "Azithromycin 500mg": { "min": 10, "max": 20, "category": "Antibiotic", "unit": "tablet" },
+    "IV Fluids - Normal Saline": { "min": 50, "max": 150, "category": "Infusion", "unit": "bottle" },
+    "IV Fluids - Ringer Lactate": { "min": 60, "max": 160, "category": "Infusion", "unit": "bottle" },
+    "Injection": { "min": 20, "max": 50, "category": "Administration", "unit": "injection" }
+  },
+  "procedures": {
+    "Platelet Transfusion": { "min": 3000, "max": 5000, "category": "Transfusion", "unit": "unit" },
+    "Blood Transfusion": { "min": 2500, "max": 4000, "category": "Transfusion", "unit": "unit" },
+    "Nebulization": { "min": 100, "max": 200, "category": "Therapy", "unit": "session" },
+    "Physiotherapy Session": { "min": 300, "max": 600, "category": "Therapy", "unit": "session" }
+  },
+  "room_charges": {
+    "General Ward": { "min": 1000, "max": 2000, "category": "Accommodation", "unit": "day" },
+    "Semi-Private Room": { "min": 2000, "max": 3500, "category": "Accommodation", "unit": "day" },
+    "Private Room": { "min": 3000, "max": 5000, "category": "Accommodation", "unit": "day" },
+    "ICU Bed Charges": { "min": 5000, "max": 7000, "category": "Accommodation", "unit": "day" }
+  },
+  "consumables": {
+    "Gloves": { "min": 10, "max": 20, "category": "Consumable", "unit": "pair" },
+    "Syringes": { "min": 5, "max": 15, "category": "Consumable", "unit": "piece" },
+    "Cotton": { "min": 20, "max": 50, "category": "Consumable", "unit": "pack" },
+    "Bandages": { "min": 30, "max": 70, "category": "Consumable", "unit": "roll" },
+    "PPE Kit": { "min": 100, "max": 200, "category": "Consumable", "unit": "kit" },
+    "Surgical Mask": { "min": 5, "max": 15, "category": "Consumable", "unit": "piece" },
+    "Hand Sanitizer": { "min": 50, "max": 100, "category": "Consumable", "unit": "bottle" }
+  },
+  "doctor_fees": {
+    "General Physician Consultation": { "min": 500, "max": 1000, "category": "Consultation" },
+    "Specialist Consultation": { "min": 1000, "max": 2000, "category": "Consultation" },
+    "Surgeon Fee": { "min": 5000, "max": 15000, "category": "Consultation" },
+    "Anesthetist Fee": { "min": 3000, "max": 8000, "category": "Consultation" }
+  }
+}

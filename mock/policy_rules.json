@@ -1,0 +1,67 @@
+{
+  "basic_policy": {
+    "name": "Standard Health Insurance",
+    "room_rent_limit": 3000,
+    "icu_limit": 7000,
+    "copay_percentage": 10,
+    "sum_insured": 500000,
+    "exclusions": [
+      "PPE Kits",
+      "Consumables",
+      "Toiletries",
+      "Admission/Registration charges"
+    ],
+    "sublimits": {
+      "cataract_surgery": 40000,
+      "hernia": 50000,
+      "hysterectomy": 75000,
+      "joint_replacement": 150000
+    },
+    "pre_hospitalization_days": 30,
+    "post_hospitalization_days": 60,
+    "ambulance_charges": 2000,
+    "day_care_procedures": true
+  },
+  "premium_policy": {
+    "name": "Premium Health Insurance",
+    "room_rent_limit": 5000,
+    "icu_limit": 10000,
+    "copay_percentage": 5,
+    "sum_insured": 1000000,
+    "exclusions": [
+      "Cosmetic procedures",
+      "Experimental treatments"
+    ],
+    "sublimits": {
+      "cataract_surgery": 60000,
+      "hernia": 75000,
+      "hysterectomy": 100000,
+      "joint_replacement": 200000
+    },
+    "pre_hospitalization_days": 60,
+    "post_hospitalization_days": 90,
+    "ambulance_charges": 5000,
+    "day_care_procedures": true,
+    "maternity_coverage": true,
+    "maternity_limit": 50000
+  },
+  "government_scheme": {
+    "name": "Ayushman Bharat",
+    "room_rent_limit": 2000,
+    "icu_limit": 5000,
+    "copay_percentage": 0,
+    "sum_insured": 500000,
+    "exclusions": [
+      "Cosmetic procedures",
+      "Consumables above specified limits"
+    ],
+    "sublimits": {
+      "general_surgery": 100000,
+      "cardiac_surgery": 200000
+    },
+    "pre_hospitalization_days": 15,
+    "post_hospitalization_days": 30,
+    "ambulance_charges": 1000,
+    "day_care_procedures": true
+  }
+}
