@@ -72,7 +72,7 @@ export default function InsuranceRecommendationPage() {
     setRecommendations(selectedPlans);
     setStep('recommendations');
     setCurrentIndex(0);
-    toast.success(`Found ${selectedPlans.length} insurance plans for you! 🛡️`);
+    toast.success(`Found ${selectedPlans.length} insurance plans for you!`);
   };
 
   const handleDependentCountChange = (count: number) => {
@@ -133,7 +133,7 @@ export default function InsuranceRecommendationPage() {
           >
             <div className="absolute -top-4 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
             <div className="absolute -bottom-4 -right-4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-            
+
             <div className="relative backdrop-blur-sm bg-card/80 rounded-3xl p-8 border border-primary/20 shadow-2xl text-center">
               <motion.div
                 animate={{ rotate: [0, 5, -5, 0] }}
@@ -143,7 +143,7 @@ export default function InsuranceRecommendationPage() {
                 <Shield className="h-12 w-12 text-primary" />
               </motion.div>
               <h1 className="text-4xl font-bold bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent mb-2">
-                Find Your Perfect Insurance 🛡️
+                Find Your Perfect Insurance
               </h1>
               <p className="text-muted-foreground text-lg flex items-center justify-center gap-2">
                 <Sparkles className="h-5 w-5" />
@@ -162,7 +162,7 @@ export default function InsuranceRecommendationPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-2xl">
                   <Users className="h-6 w-6 text-primary" />
-                  Your Profile Information ✨
+                  Your Profile Information
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -173,7 +173,7 @@ export default function InsuranceRecommendationPage() {
                       <Heart className="h-5 w-5 text-primary" fill="currentColor" />
                       Personal Details
                     </h3>
-                    
+
                     <div>
                       <Label htmlFor="name" className="text-base font-semibold">Full Name *</Label>
                       <Input
@@ -222,7 +222,7 @@ export default function InsuranceRecommendationPage() {
                   <div className="space-y-4">
                     <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
                       <DollarSign className="h-5 w-5 text-primary" />
-                      Financial Details 💰
+                      Financial Details
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -261,9 +261,9 @@ export default function InsuranceRecommendationPage() {
                   <div className="space-y-4">
                     <h3 className="font-bold text-lg border-b pb-2 flex items-center gap-2">
                       <Users className="h-5 w-5 text-primary" />
-                      Family Dependents 👨‍👩‍👧‍👦
+                      Family Dependents
                     </h3>
-                    
+
                     <div>
                       <Label htmlFor="dependentCount" className="text-base font-semibold">Number of Dependents</Label>
                       <Input
@@ -310,7 +310,7 @@ export default function InsuranceRecommendationPage() {
                       <div className="flex items-start gap-3">
                         <Info className="h-5 w-5 text-blue-600 mt-0.5 shrink-0" />
                         <div className="text-sm text-blue-900 dark:text-blue-100">
-                          <p className="font-semibold mb-1">💡 Recommended Coverage</p>
+                          <p className="font-semibold mb-1 flex items-center gap-2"><Info className="h-4 w-4" /> Recommended Coverage</p>
                           <p>
                             Based on your salary, we recommend a sum insured between{' '}
                             <strong>₹{calculateRecommendedCoverage().min.toLocaleString()}</strong> to{' '}
@@ -347,15 +347,15 @@ export default function InsuranceRecommendationPage() {
           className="relative mb-8"
         >
           <div className="absolute -top-4 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-          
+
           <div className="relative backdrop-blur-sm bg-card/80 rounded-3xl p-6 border border-primary/20 shadow-2xl">
             <div className="flex items-center justify-between flex-wrap gap-4">
               <div>
                 <h1 className="text-3xl font-bold bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  Recommended Plans for {profile.name} 🛡️
+                  Recommended Plans for {profile.name}
                 </h1>
                 <p className="text-muted-foreground mt-2">
-                  {recommendations.length} plans matched based on your profile ✨
+                  {recommendations.length} plans matched based on your profile
                 </p>
               </div>
               <Button variant="outline" onClick={() => setStep('profile')} className="rounded-2xl">
@@ -446,7 +446,7 @@ export default function InsuranceRecommendationPage() {
                           {isTopPick && (
                             <Badge className="mb-2 bg-primary">
                               <TrendingUp className="h-3 w-3 mr-1" />
-                              Best Match ✨
+                              Best Match
                             </Badge>
                           )}
                           <CardTitle className="text-xl">{plan.planName}</CardTitle>
@@ -520,7 +520,7 @@ export default function InsuranceRecommendationPage() {
                       {/* Action Button */}
                       <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                         <Button className={`w-full rounded-2xl ${isTopPick ? '' : 'variant-outline'}`} variant={isTopPick ? 'default' : 'outline'}>
-                          Select This Plan 🛡️
+                          Select This Plan
                         </Button>
                       </motion.div>
                     </CardContent>

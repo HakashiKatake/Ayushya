@@ -10,7 +10,7 @@ import { analyzeBillForFraud } from '@/lib/fraudDetection';
 export async function GET(request: Request) {
   try {
     const clerkUser = await currentUser();
-    
+
     if (!clerkUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -56,7 +56,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const clerkUser = await currentUser();
-    
+
     if (!clerkUser) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -85,15 +85,16 @@ export async function POST(request: Request) {
     const totalAmount = items.reduce((sum: number, item: any) => sum + item.totalPrice, 0);
 
     // Run fraud detection
-    const fraudAnalysis = analyzeBillForFraud(items, billDate || new Date());
+    const fraudAnalysis = analyzeBillForFraud(items);
 
     // Create bill
     const bill = await Bill.create({
       caseId,
       totalAmount,
       fraudScore: fraudAnalysis.fraudScore,
-      fraudFlags: fraudAnalysis.suspiciousItems.map((item) => item.description),
-      estimatedOvercharge: fraudAnalysis.estimatedOvercharge,
+      estimatedOverchargeMin: fraudAnalysis.estimatedOverchargeMin,
+      estimatedOverchargeMax: fraudAnalysis.estimatedOverchargeMax,
+      analysisExplanation: fraudAnalysis.analysisExplanation,
       billDate: billDate || new Date(),
     });
 
@@ -110,9 +111,9 @@ export async function POST(request: Request) {
       }))
     );
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       bill: { ...bill.toObject(), items: billItems },
-      fraudAnalysis 
+      fraudAnalysis
     }, { status: 201 });
   } catch (error) {
     console.error('Error creating bill:', error);

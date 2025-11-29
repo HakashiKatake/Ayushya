@@ -3,15 +3,15 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@clerk/nextjs';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Plus, 
-  Activity, 
-  FileText, 
-  Shield, 
+import {
+  Plus,
+  Activity,
+  FileText,
+  Shield,
   TrendingDown,
   Clock,
   Hospital,
@@ -22,12 +22,13 @@ import {
   Calendar,
   MapPin,
   DollarSign,
-  TrendingUp,
   Users,
   Pill,
   Stethoscope,
   AlertCircle,
-  CheckCircle2
+  CheckCircle2,
+  Zap,
+  Search
 } from 'lucide-react';
 import Link from 'next/link';
 import { useCaseStore, type Case } from '@/store/caseStore';
@@ -38,6 +39,7 @@ export default function DashboardPage() {
   const { cases, setCases, setLoading } = useCaseStore();
   const [activeCases, setActiveCases] = useState<Case[]>([]);
   const [pastCases, setPastCases] = useState<Case[]>([]);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   useEffect(() => {
     if (isLoaded && !user) {
@@ -73,31 +75,32 @@ export default function DashboardPage() {
 
   if (!isLoaded || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <motion.div 
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
+          className="text-center relative"
         >
+          <div className="absolute inset-0 blur-3xl bg-blue-500/20 rounded-full" />
           <motion.div
-            animate={{ 
+            animate={{
               rotate: 360,
               scale: [1, 1.1, 1]
             }}
-            transition={{ 
-              rotate: { duration: 2, repeat: Infinity, ease: "linear" },
-              scale: { duration: 1, repeat: Infinity }
+            transition={{
+              rotate: { duration: 3, repeat: Infinity, ease: "linear" },
+              scale: { duration: 2, repeat: Infinity }
             }}
-            className="mx-auto mb-6"
+            className="relative mx-auto mb-6 bg-slate-900/50 p-6 rounded-full border border-white/10 backdrop-blur-md"
           >
-            <Heart className="h-16 w-16 text-primary" fill="currentColor" />
+            <Heart className="h-12 w-12 text-blue-400" fill="currentColor" />
           </motion.div>
-          <motion.p 
+          <motion.p
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 1.5, repeat: Infinity }}
-            className="text-lg font-medium text-muted-foreground"
+            className="text-lg font-medium text-blue-200"
           >
-            Loading your dashboard... 🏥
+            Initializing Health Matrix...
           </motion.p>
         </motion.div>
       </div>
@@ -123,416 +126,306 @@ export default function DashboardPage() {
 
   const maxSpending = Math.max(...spendingData.map(d => d.amount));
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring" as const,
+        stiffness: 100
+      }
+    }
+  };
+
   return (
-    <div className="max-w-7xl mx-auto">
-      {/* Welcome Header with Stats */}
-      <motion.div
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="mb-8"
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Welcome Card */}
-          <motion.div
-            whileHover={{ y: -4 }}
-            className="lg:col-span-2"
-          >
-            <Card className="backdrop-blur-sm bg-gradient-to-br from-primary/20 via-primary/10 to-transparent rounded-3xl border border-primary/20 shadow-xl overflow-hidden">
-              <CardContent className="p-8">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.2, type: "spring" }}
-                      className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4"
-                    >
-                      <Sparkles className="h-4 w-4 text-primary" />
-                      <span className="text-sm font-semibold text-primary">Welcome Back!</span>
-                    </motion.div>
-                    <h1 className="text-4xl font-bold mb-2">
-                      Hello, {user.firstName || 'User'}! 👋
-                    </h1>
-                    <p className="text-muted-foreground text-lg">
-                      Here's what's happening with your health today
-                    </p>
-                  </div>
-                  <motion.div
-                    animate={{ 
-                      y: [0, -10, 0],
-                    }}
-                    transition={{ 
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                    className="hidden md:block"
-                  >
-                    <div className="bg-primary/10 p-4 rounded-3xl">
-                      <Heart className="h-16 w-16 text-primary" fill="currentColor" />
-                    </div>
-                  </motion.div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+    <div className="min-h-screen bg-slate-950 text-white relative overflow-hidden font-sans selection:bg-blue-500/30">
+      {/* Background Elements */}
+      <div className="fixed inset-0 z-0">
+        <div className="absolute inset-0 bg-[url('/dashboard-bg.png')] bg-cover bg-center opacity-40 mix-blend-screen" />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-slate-950/80 to-slate-950" />
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-950/0 to-slate-950/0" />
+      </div>
 
-          {/* Quick Stats */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Card className="backdrop-blur-sm bg-card/80 rounded-3xl border border-primary/20 shadow-xl h-full">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="bg-green-500/10 p-2 rounded-xl">
-                        <Activity className="h-5 w-5 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Active Cases</p>
-                        <p className="text-2xl font-bold">{activeCases.length}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="bg-blue-500/10 p-2 rounded-xl">
-                        <FileText className="h-5 w-5 text-blue-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Total Cases</p>
-                        <p className="text-2xl font-bold">{cases.length}</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="bg-purple-500/10 p-2 rounded-xl">
-                        <TrendingDown className="h-5 w-5 text-purple-600" />
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Savings</p>
-                        <p className="text-2xl font-bold">₹12.4K</p>
-                      </div>
-                    </div>
-                  </div>
+      <div className="relative z-10 max-w-7xl mx-auto p-6 lg:p-8">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-8"
+        >
+          {/* Header Section */}
+          <motion.div variants={itemVariants} className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+            <div>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex items-center gap-3 mb-2"
+              >
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                  <span className="text-xl font-bold text-white">A</span>
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </motion.div>
+                <span className="text-sm font-medium text-blue-300 tracking-wider uppercase">Health Dashboard</span>
+              </motion.div>
+              <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-blue-200">
+                Good Morning, {user.firstName}
+              </h1>
+            </div>
 
-      {/* Quick Actions - Redesigned */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-        className="mb-8"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-primary" />
-            Quick Actions
-          </h2>
-        </div>
-        
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {[
-            { href: '/dashboard/cases/new', icon: Plus, label: 'New Case', gradient: 'from-blue-500 to-blue-600' },
-            { href: '/dashboard/medical-history', icon: FileText, label: 'History', gradient: 'from-purple-500 to-purple-600' },
-            { href: '/dashboard/prescription-reader', icon: Camera, label: 'Scan Rx', gradient: 'from-orange-500 to-orange-600' },
-            { href: '/dashboard/insurance', icon: Shield, label: 'Insurance', gradient: 'from-green-500 to-green-600' },
-            { href: '/dashboard/admin', icon: Activity, label: 'Analytics', gradient: 'from-pink-500 to-pink-600' },
-            { href: '/dashboard', icon: Pill, label: 'Medicine', gradient: 'from-indigo-500 to-indigo-600' },
-          ].map((action, idx) => (
             <motion.div
-              key={action.href}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * idx }}
-              whileHover={{ y: -8, scale: 1.05 }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="relative group"
             >
-              <Link href={action.href}>
-                <Card className={`relative overflow-hidden cursor-pointer bg-gradient-to-br ${action.gradient} text-white shadow-xl border-0 h-32`}>
-                  <div className="absolute top-0 right-0 w-20 h-20 bg-white/10 rounded-full -mr-10 -mt-10" />
-                  <CardContent className="p-4 h-full flex flex-col items-center justify-center relative">
-                    <motion.div
-                      whileHover={{ rotate: 360 }}
-                      transition={{ duration: 0.6 }}
-                      className="bg-white/20 p-3 rounded-2xl mb-2"
-                    >
-                      <action.icon className="h-6 w-6" />
-                    </motion.div>
-                    <div className="text-center">
-                      <div className="font-semibold text-sm">{action.label}</div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Health Metrics & Spending Chart */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="mb-8"
-      >
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Health Metrics */}
-          <Card className="backdrop-blur-sm bg-card/80 rounded-3xl border border-primary/20 shadow-xl">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-primary" />
-                Health Vitals 💓
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="bg-gradient-to-br from-red-500/10 to-red-600/10 p-4 rounded-2xl border border-red-500/20"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Heart className="h-5 w-5 text-red-600" fill="currentColor" />
-                    <span className="text-sm text-muted-foreground">Heart Rate</span>
-                  </div>
-                  <p className="text-3xl font-bold text-red-600">{healthMetrics.heartRate}</p>
-                  <p className="text-xs text-muted-foreground">bpm</p>
-                  <div className="mt-2 h-1 bg-red-200 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: '75%' }}
-                      transition={{ delay: 0.5, duration: 1 }}
-                      className="h-full bg-red-600"
-                    />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 p-4 rounded-2xl border border-blue-500/20"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Activity className="h-5 w-5 text-blue-600" />
-                    <span className="text-sm text-muted-foreground">Blood Pressure</span>
-                  </div>
-                  <p className="text-3xl font-bold text-blue-600">{healthMetrics.bloodPressure}</p>
-                  <p className="text-xs text-muted-foreground">mmHg</p>
-                  <div className="mt-2 h-1 bg-blue-200 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: '60%' }}
-                      transition={{ delay: 0.6, duration: 1 }}
-                      className="h-full bg-blue-600"
-                    />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="bg-gradient-to-br from-green-500/10 to-green-600/10 p-4 rounded-2xl border border-green-500/20"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Users className="h-5 w-5 text-green-600" />
-                    <span className="text-sm text-muted-foreground">Steps Today</span>
-                  </div>
-                  <p className="text-3xl font-bold text-green-600">{healthMetrics.steps.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">steps</p>
-                  <div className="mt-2 h-1 bg-green-200 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: '85%' }}
-                      transition={{ delay: 0.7, duration: 1 }}
-                      className="h-full bg-green-600"
-                    />
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 p-4 rounded-2xl border border-purple-500/20"
-                >
-                  <div className="flex items-center gap-2 mb-2">
-                    <Clock className="h-5 w-5 text-purple-600" />
-                    <span className="text-sm text-muted-foreground">Sleep</span>
-                  </div>
-                  <p className="text-3xl font-bold text-purple-600">{healthMetrics.sleep}h</p>
-                  <p className="text-xs text-muted-foreground">hours</p>
-                  <div className="mt-2 h-1 bg-purple-200 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: '94%' }}
-                      transition={{ delay: 0.8, duration: 1 }}
-                      className="h-full bg-purple-600"
-                    />
-                  </div>
-                </motion.div>
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur opacity-30 group-hover:opacity-75 transition duration-200" />
+              <div className="relative flex items-center bg-slate-900 rounded-full p-1 pr-4 border border-white/10">
+                <div className="h-10 w-10 rounded-full bg-slate-800 flex items-center justify-center border border-white/5">
+                  <Search className="h-5 w-5 text-blue-400" />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search records..."
+                  className="bg-transparent border-none outline-none text-sm ml-3 text-white placeholder:text-slate-500 w-48"
+                />
               </div>
-            </CardContent>
-          </Card>
+            </motion.div>
+          </motion.div>
 
-          {/* Spending Chart */}
-          <Card className="backdrop-blur-sm bg-card/80 rounded-3xl border border-primary/20 shadow-xl">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 justify-between">
-                <span className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5 text-primary" />
-                  Healthcare Spending 💰
-                </span>
-                <Badge variant="outline" className="rounded-xl">
-                  <TrendingDown className="h-3 w-3 mr-1" />
-                  -12%
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {spendingData.map((data, idx) => (
+          {/* Main Grid Layout */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            {/* Left Column - Stats & Vitals */}
+            <div className="lg:col-span-8 space-y-6">
+              {/* Hero Card */}
+              <motion.div variants={itemVariants}>
+                <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 group">
+                  <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl group-hover:bg-blue-500/30 transition-colors duration-500" />
+
+                  <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div className="md:col-span-2">
+                      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 mb-4">
+                        <Sparkles className="h-3 w-3 text-blue-400" />
+                        <span className="text-xs font-medium text-blue-300">AI Insights Ready</span>
+                      </div>
+                      <h2 className="text-2xl font-bold mb-2 text-white">Your Health Overview</h2>
+                      <p className="text-slate-400 mb-6">
+                        Your vitals are stable. We've detected a 12% decrease in your healthcare spending this month compared to last month.
+                      </p>
+                      <div className="flex gap-4">
+                        <Button className="bg-blue-600 hover:bg-blue-500 text-white rounded-xl shadow-lg shadow-blue-600/20 border-0">
+                          View Full Report
+                        </Button>
+                        <Button variant="outline" className="border-white/10 text-white hover:bg-white/5 rounded-xl bg-transparent">
+                          Share with Doctor
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-center">
+                      <div className="relative h-32 w-32">
+                        <svg className="h-full w-full transform -rotate-90">
+                          <circle cx="64" cy="64" r="60" stroke="currentColor" strokeWidth="8" fill="transparent" className="text-slate-800" />
+                          <motion.circle
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: 0.85 }}
+                            transition={{ duration: 2, ease: "easeOut" }}
+                            cx="64" cy="64" r="60"
+                            stroke="currentColor"
+                            strokeWidth="8"
+                            fill="transparent"
+                            strokeLinecap="round"
+                            className="text-blue-500"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-3xl font-bold text-white">85</span>
+                          <span className="text-xs text-slate-400 uppercase tracking-wider">Score</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+              {/* Vitals Grid */}
+              <motion.div variants={itemVariants} className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {[
+                  { label: 'Heart Rate', value: healthMetrics.heartRate, unit: 'bpm', icon: Heart, color: 'text-rose-500', bg: 'bg-rose-500/10', border: 'border-rose-500/20' },
+                  { label: 'Blood Pressure', value: healthMetrics.bloodPressure, unit: 'mmHg', icon: Activity, color: 'text-cyan-500', bg: 'bg-cyan-500/10', border: 'border-cyan-500/20' },
+                  { label: 'Steps', value: healthMetrics.steps.toLocaleString(), unit: 'today', icon: Users, color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20' },
+                  { label: 'Sleep', value: healthMetrics.sleep, unit: 'hours', icon: Clock, color: 'text-violet-500', bg: 'bg-violet-500/10', border: 'border-violet-500/20' },
+                ].map((stat, idx) => (
                   <motion.div
-                    key={data.month}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.1 * idx }}
-                    className="flex items-center gap-3"
+                    key={stat.label}
+                    whileHover={{ y: -5 }}
+                    className={`p-4 rounded-2xl border ${stat.border} ${stat.bg} backdrop-blur-sm relative overflow-hidden`}
                   >
-                    <span className="text-sm font-medium w-10 text-muted-foreground">{data.month}</span>
-                    <div className="flex-1 bg-muted/30 rounded-full h-8 overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${(data.amount / maxSpending) * 100}%` }}
-                        transition={{ delay: 0.5 + (0.1 * idx), duration: 1, ease: "easeOut" }}
-                        className="h-full bg-gradient-to-r from-primary to-primary/60 flex items-center justify-end px-3"
-                      >
-                        <span className="text-xs font-semibold text-white">₹{data.amount.toLocaleString()}</span>
-                      </motion.div>
+                    <div className="flex justify-between items-start mb-2">
+                      <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                      <div className={`h-2 w-2 rounded-full ${stat.color.replace('text', 'bg')}`} />
+                    </div>
+                    <div className="mt-2">
+                      <span className="text-2xl font-bold text-white">{stat.value}</span>
+                      <p className="text-xs text-slate-400 mt-1">{stat.unit}</p>
                     </div>
                   </motion.div>
                 ))}
-              </div>
-              <div className="mt-6 p-4 bg-gradient-to-br from-green-500/10 to-green-600/10 rounded-2xl border border-green-500/20">
-                <div className="flex items-center gap-2 text-green-600">
-                  <TrendingDown className="h-5 w-5" />
-                  <span className="font-semibold">You saved ₹2,340 this month!</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </motion.div>
-
-      {/* Active Cases */}
-      {activeCases.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mb-8"
-        >
-          <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-            <Activity className="h-6 w-6 text-primary" />
-            Active Cases 🏥
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activeCases.map((caseItem, idx) => (
-              <motion.div
-                key={caseItem.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * idx }}
-                whileHover={{ y: -8, scale: 1.02 }}
-              >
-                <Link href={`/dashboard/cases/${caseItem.id}`}>
-                  <Card className="backdrop-blur-sm bg-card/80 rounded-3xl border border-primary/20 shadow-xl cursor-pointer overflow-hidden group">
-                    <div className="h-2 bg-gradient-to-r from-primary to-primary/60" />
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="bg-primary/10 p-3 rounded-2xl">
-                          <Hospital className="h-6 w-6 text-primary" />
-                        </div>
-                        <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
-                          <Activity className="h-3 w-3 mr-1" />
-                          Active
-                        </Badge>
-                      </div>
-                      <h3 className="font-bold text-lg mb-2">{caseItem.hospitalName}</h3>
-                      <div className="space-y-2 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Stethoscope className="h-4 w-4" />
-                          <span>{caseItem.diagnosis || 'General Checkup'}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>{new Date(caseItem.admissionDate).toLocaleDateString()}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4" />
-                          <span>{caseItem.location}</span>
-                        </div>
-                      </div>
-                      <div className="mt-4 flex items-center justify-between">
-                        <span className="text-xs text-muted-foreground">Case #{caseItem.id.slice(0, 8)}</span>
-                        <ArrowRight className="h-4 w-4 text-primary group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
               </motion.div>
-            ))}
+
+              {/* Active Cases List */}
+              <motion.div variants={itemVariants}>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    <Hospital className="h-5 w-5 text-blue-400" />
+                    Active Cases
+                  </h3>
+                  <Link href="/dashboard/cases" className="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+                    View All
+                  </Link>
+                </div>
+
+                <div className="space-y-3">
+                  {activeCases.length > 0 ? (
+                    activeCases.map((caseItem, idx) => (
+                      <motion.div
+                        key={caseItem._id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                      >
+                        <Link href={`/dashboard/cases/${caseItem._id}`}>
+                          <div className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-4 hover:bg-white/10 transition-all duration-300">
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-slate-800 flex items-center justify-center border border-white/5 group-hover:scale-110 transition-transform">
+                                  <Hospital className="h-6 w-6 text-blue-400" />
+                                </div>
+                                <div>
+                                  <h4 className="font-semibold text-white group-hover:text-blue-300 transition-colors">{caseItem.hospitalName}</h4>
+                                  <div className="flex items-center gap-3 text-sm text-slate-400 mt-1">
+                                    <span className="flex items-center gap-1">
+                                      <Stethoscope className="h-3 w-3" />
+                                      {caseItem.chiefComplaint || 'Checkup'}
+                                    </span>
+                                    <span className="w-1 h-1 rounded-full bg-slate-600" />
+                                    <span className="flex items-center gap-1">
+                                      <Calendar className="h-3 w-3" />
+                                      {new Date(caseItem.admissionDatetime).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <Badge className="bg-green-500/20 text-green-400 border-green-500/20 hover:bg-green-500/30">
+                                  Active
+                                </Badge>
+                                <ArrowRight className="h-5 w-5 text-slate-500 group-hover:text-white group-hover:translate-x-1 transition-all" />
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      </motion.div>
+                    ))
+                  ) : (
+                    <div className="text-center py-12 rounded-2xl border border-white/5 bg-white/5 border-dashed">
+                      <Hospital className="h-12 w-12 text-slate-600 mx-auto mb-3" />
+                      <p className="text-slate-400">No active cases at the moment</p>
+                      <Button variant="link" className="text-blue-400">Start a new case</Button>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            </div>
+
+            {/* Right Column - Quick Actions & Spending */}
+            <div className="lg:col-span-4 space-y-6">
+              {/* Quick Actions Grid */}
+              <motion.div variants={itemVariants}>
+                <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { href: '/dashboard/cases/new', icon: Plus, label: 'New Case', color: 'from-blue-600 to-blue-400' },
+                    { href: '/dashboard/medical-history', icon: FileText, label: 'History', color: 'from-purple-600 to-purple-400' },
+                    { href: '/dashboard/prescription-reader', icon: Camera, label: 'Scan Rx', color: 'from-orange-600 to-orange-400' },
+                    { href: '/dashboard/insurance', icon: Shield, label: 'Insurance', color: 'from-emerald-600 to-emerald-400' },
+                    { href: '/dashboard/admin', icon: Activity, label: 'Analytics', color: 'from-pink-600 to-pink-400' },
+                    { href: '/dashboard', icon: Pill, label: 'Meds', color: 'from-indigo-600 to-indigo-400' },
+                  ].map((action, idx) => (
+                    <Link key={action.href} href={action.href}>
+                      <motion.div
+                        whileHover={{ scale: 1.02, y: -2 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="relative overflow-hidden rounded-2xl bg-slate-800/50 border border-white/5 p-4 group hover:border-white/20 transition-colors h-full"
+                      >
+                        <div className={`absolute inset-0 bg-gradient-to-br ${action.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+                        <div className={`h-10 w-10 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-3 shadow-lg`}>
+                          <action.icon className="h-5 w-5 text-white" />
+                        </div>
+                        <span className="text-sm font-medium text-slate-300 group-hover:text-white transition-colors">
+                          {action.label}
+                        </span>
+                      </motion.div>
+                    </Link>
+                  ))}
+                </div>
+              </motion.div>
+
+              {/* Spending Card */}
+              <motion.div variants={itemVariants}>
+                <div className="rounded-3xl border border-white/10 bg-gradient-to-b from-slate-800/50 to-slate-900/50 backdrop-blur-xl p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <p className="text-sm text-slate-400">Total Spending</p>
+                      <h3 className="text-2xl font-bold text-white">₹12,450</h3>
+                    </div>
+                    <div className="h-10 w-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                      <TrendingDown className="h-5 w-5 text-green-400" />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    {spendingData.slice(-4).map((data, idx) => (
+                      <div key={data.month} className="space-y-2">
+                        <div className="flex justify-between text-xs text-slate-400">
+                          <span>{data.month}</span>
+                          <span>₹{data.amount}</span>
+                        </div>
+                        <div className="h-2 bg-slate-700/50 rounded-full overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: `${(data.amount / maxSpending) * 100}%` }}
+                            transition={{ delay: 0.5 + (0.1 * idx), duration: 1 }}
+                            className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 pt-4 border-t border-white/5">
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                      <Zap className="h-5 w-5 text-blue-400" />
+                      <p className="text-xs text-blue-200">
+                        <span className="font-semibold">Pro Tip:</span> Upload your bills before 11 PM to get faster processing.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
         </motion.div>
-      )}
-
-      {/* Recent Alerts/Tips */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="mb-8"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className="backdrop-blur-sm bg-gradient-to-br from-blue-500/10 to-blue-600/10 rounded-3xl border border-blue-500/20 shadow-xl">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="bg-blue-500/20 p-3 rounded-2xl">
-                  <CheckCircle2 className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg mb-2 text-blue-900 dark:text-blue-100">Health Tip 💡</h3>
-                  <p className="text-sm text-blue-800 dark:text-blue-200">
-                    Your health metrics are looking great! Keep up the good work with regular exercise and proper sleep.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="backdrop-blur-sm bg-gradient-to-br from-orange-500/10 to-orange-600/10 rounded-3xl border border-orange-500/20 shadow-xl">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="bg-orange-500/20 p-3 rounded-2xl">
-                  <AlertCircle className="h-6 w-6 text-orange-600" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-lg mb-2 text-orange-900 dark:text-orange-100">Reminder 🔔</h3>
-                  <p className="text-sm text-orange-800 dark:text-orange-200">
-                    Don't forget your annual health checkup! Schedule an appointment with your doctor soon.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
