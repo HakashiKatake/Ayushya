@@ -1,9 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Download, FileText, Hospital, Calendar, Pill, TestTube, FileJson } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Download, FileText, Hospital, Calendar, Pill, TestTube, FileJson,
+  Heart, Activity, Stethoscope, Syringe, Sparkles,
+  TrendingUp, Shield, AlertTriangle, CheckCircle2, Clock
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -81,24 +84,20 @@ export default function MedicalHistoryPage() {
 
   const fetchMedicalHistory = async () => {
     try {
-      // Fetch all cases
       const casesRes = await fetch('/api/cases');
       const casesData = await casesRes.json();
       const cases = casesData.cases || [];
 
-      // Fetch events for all cases
       const allEvents: Event[] = [];
       const allBills: Bill[] = [];
       
       for (const caseItem of cases) {
-        // Fetch events
         const eventsRes = await fetch(`/api/events?caseId=${caseItem._id}`);
         if (eventsRes.ok) {
           const eventsData = await eventsRes.json();
           allEvents.push(...(eventsData.events || []));
         }
 
-        // Fetch bills
         const billsRes = await fetch(`/api/bills?caseId=${caseItem._id}`);
         if (billsRes.ok) {
           const billsData = await billsRes.json();
@@ -111,7 +110,7 @@ export default function MedicalHistoryPage() {
         cases,
         events: allEvents,
         bills: allBills,
-        documents: [], // Mock for now
+        documents: [],
       });
     } catch (error) {
       console.error('Error fetching medical history:', error);
@@ -139,7 +138,6 @@ export default function MedicalHistoryPage() {
     const doc = new jsPDF();
     let yPos = 20;
 
-    // Title
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
     doc.text('Complete Medical History', 20, yPos);
@@ -149,7 +147,6 @@ export default function MedicalHistoryPage() {
     doc.line(20, yPos, 190, yPos);
     yPos += 10;
 
-    // Patient Information
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.text('Patient Information', 20, yPos);
@@ -164,83 +161,6 @@ export default function MedicalHistoryPage() {
     doc.text(`Total Medical Events: ${history.events.length}`, 20, yPos);
     yPos += 15;
 
-    // Chronic Conditions
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Chronic Conditions', 20, yPos);
-    yPos += 8;
-
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'normal');
-    history.chronicConditions.forEach((condition) => {
-      doc.text(`• ${condition}`, 20, yPos);
-      yPos += 7;
-    });
-    yPos += 5;
-
-    // Allergies
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Known Allergies', 20, yPos);
-    yPos += 8;
-
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'normal');
-    history.allergies.forEach((allergy) => {
-      doc.text(`• ${allergy}`, 20, yPos);
-      yPos += 7;
-    });
-    yPos += 5;
-
-    // Current Medications
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Current Medications', 20, yPos);
-    yPos += 8;
-
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'normal');
-    history.medications.forEach((med) => {
-      doc.text(`• ${med}`, 20, yPos);
-      yPos += 7;
-    });
-    yPos += 10;
-
-    // Hospitalization History
-    if (yPos > 250) {
-      doc.addPage();
-      yPos = 20;
-    }
-
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Hospitalization History', 20, yPos);
-    yPos += 8;
-
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'normal');
-    history.cases.slice(0, 5).forEach((caseItem, index) => {
-      if (yPos > 270) {
-        doc.addPage();
-        yPos = 20;
-      }
-      
-      doc.setFont('helvetica', 'bold');
-      doc.text(`${index + 1}. ${caseItem.hospitalName}`, 20, yPos);
-      yPos += 6;
-      
-      doc.setFont('helvetica', 'normal');
-      doc.text(`   Location: ${caseItem.location}`, 20, yPos);
-      yPos += 6;
-      doc.text(`   Admitted: ${new Date(caseItem.admissionDatetime).toLocaleDateString()}`, 20, yPos);
-      yPos += 6;
-      doc.text(`   Reason: ${caseItem.chiefComplaint}`, 20, yPos);
-      yPos += 6;
-      doc.text(`   Status: ${caseItem.status}`, 20, yPos);
-      yPos += 10;
-    });
-
-    // Footer
     const pageCount = doc.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
@@ -255,318 +175,588 @@ export default function MedicalHistoryPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading medical history...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-background via-primary/5 to-background">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center"
+        >
+          <motion.div
+            animate={{ 
+              rotate: 360,
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ 
+              rotate: { duration: 2, repeat: Infinity, ease: "linear" },
+              scale: { duration: 1, repeat: Infinity }
+            }}
+            className="mx-auto mb-6"
+          >
+            <Heart className="h-16 w-16 text-primary" fill="currentColor" />
+          </motion.div>
+          <motion.p 
+            animate={{ opacity: [0.5, 1, 0.5] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="text-lg font-medium text-muted-foreground"
+          >
+            Loading your medical journey... 🏥
+          </motion.p>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+    <div className="min-h-screen bg-linear-to-br from-background via-primary/5 to-background">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          transition={{ duration: 0.6 }}
+          className="relative mb-12"
         >
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Complete Medical History</h1>
-              <p className="text-gray-600 mt-2">
-                All your medical records across different hospitals
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Button onClick={exportToJSON} variant="outline">
-                <FileJson className="h-4 w-4 mr-2" />
-                Export JSON
-              </Button>
-              <Button onClick={exportToPDF}>
-                <Download className="h-4 w-4 mr-2" />
-                Export PDF
-              </Button>
+          <div className="absolute -top-4 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute -bottom-4 -right-4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+          
+          <div className="relative backdrop-blur-sm bg-card/80 rounded-3xl p-8 border border-primary/20 shadow-2xl">
+            <div className="flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-4">
+                <motion.div
+                  animate={{ rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="bg-primary/10 p-4 rounded-2xl"
+                >
+                  <Heart className="h-10 w-10 text-primary" fill="currentColor" />
+                </motion.div>
+                <div>
+                  <h1 className="text-4xl font-bold bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                    Your Health Journey ✨
+                  </h1>
+                  <p className="text-muted-foreground mt-2 flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    Complete medical records across all hospitals
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button onClick={exportToJSON} variant="outline" className="gap-2">
+                    <FileJson className="h-4 w-4" />
+                    Export JSON
+                  </Button>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button onClick={exportToPDF} className="gap-2 bg-primary">
+                    <Download className="h-4 w-4" />
+                    Export PDF
+                  </Button>
+                </motion.div>
+              </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Total Hospitals</p>
-                  <p className="text-2xl font-bold">{new Set(history.cases.map(c => c.hospitalName)).size}</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            whileHover={{ y: -8, scale: 1.02 }}
+          >
+            <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-blue-500/90 to-blue-600/90 p-6 shadow-xl">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+              <div className="relative">
+                <div className="flex items-center justify-between mb-3">
+                  <Hospital className="h-12 w-12 text-white/90" />
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Sparkles className="h-6 w-6 text-white/60" />
+                  </motion.div>
                 </div>
-                <Hospital className="h-8 w-8 text-blue-600" />
+                <p className="text-white/80 text-sm font-medium">Total Hospitals 🏥</p>
+                <p className="text-4xl font-bold text-white mt-2">
+                  {new Set(history.cases.map(c => c.hospitalName)).size}
+                </p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </motion.div>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Hospitalizations</p>
-                  <p className="text-2xl font-bold">{history.cases.length}</p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            whileHover={{ y: -8, scale: 1.02 }}
+          >
+            <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-green-500/90 to-green-600/90 p-6 shadow-xl">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+              <div className="relative">
+                <div className="flex items-center justify-between mb-3">
+                  <Calendar className="h-12 w-12 text-white/90" />
+                  <CheckCircle2 className="h-6 w-6 text-white/60" />
                 </div>
-                <Calendar className="h-8 w-8 text-green-600" />
+                <p className="text-white/80 text-sm font-medium">Visits 📅</p>
+                <p className="text-4xl font-bold text-white mt-2">{history.cases.length}</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </motion.div>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Medical Events</p>
-                  <p className="text-2xl font-bold">{history.events.length}</p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            whileHover={{ y: -8, scale: 1.02 }}
+          >
+            <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-purple-500/90 to-purple-600/90 p-6 shadow-xl">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+              <div className="relative">
+                <div className="flex items-center justify-between mb-3">
+                  <Activity className="h-12 w-12 text-white/90" />
+                  <TrendingUp className="h-6 w-6 text-white/60" />
                 </div>
-                <TestTube className="h-8 w-8 text-purple-600" />
+                <p className="text-white/80 text-sm font-medium">Medical Events 🔬</p>
+                <p className="text-4xl font-bold text-white mt-2">{history.events.length}</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </motion.div>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Documents</p>
-                  <p className="text-2xl font-bold">{history.documents.length}</p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            whileHover={{ y: -8, scale: 1.02 }}
+          >
+            <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-orange-500/90 to-orange-600/90 p-6 shadow-xl">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
+              <div className="relative">
+                <div className="flex items-center justify-between mb-3">
+                  <FileText className="h-12 w-12 text-white/90" />
+                  <Shield className="h-6 w-6 text-white/60" />
                 </div>
-                <FileText className="h-8 w-8 text-orange-600" />
+                <p className="text-white/80 text-sm font-medium">Documents 📄</p>
+                <p className="text-4xl font-bold text-white mt-2">{history.documents.length}</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </motion.div>
         </div>
 
-        {/* Detailed Information */}
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="hospitals">Hospitals</TabsTrigger>
-            <TabsTrigger value="medications">Medications</TabsTrigger>
-            <TabsTrigger value="events">Events</TabsTrigger>
-            <TabsTrigger value="bills">Bills</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-5 p-1 bg-card/50 backdrop-blur-sm rounded-2xl border border-primary/10">
+            <TabsTrigger value="overview" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              ✨ Overview
+            </TabsTrigger>
+            <TabsTrigger value="hospitals" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              🏥 Hospitals
+            </TabsTrigger>
+            <TabsTrigger value="medications" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              💊 Medications
+            </TabsTrigger>
+            <TabsTrigger value="events" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              🔬 Events
+            </TabsTrigger>
+            <TabsTrigger value="bills" className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              💰 Bills
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
-            {/* Patient Profile */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Patient Profile</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h4 className="font-semibold mb-2">Chronic Conditions</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {history.chronicConditions.map((condition, idx) => (
-                      <Badge key={idx} variant="secondary">{condition}</Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold mb-2">Known Allergies</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {history.allergies.map((allergy, idx) => (
-                      <Badge key={idx} variant="destructive">{allergy}</Badge>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-semibold mb-2">Current Medications</h4>
-                  <div className="space-y-2">
-                    {history.medications.map((med, idx) => (
-                      <div key={idx} className="flex items-center gap-2">
-                        <Pill className="h-4 w-4 text-blue-600" />
-                        <span>{med}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Recent Activity */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Medical Activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {history.events.slice(0, 10).map((event) => (
-                    <div key={event._id} className="flex items-start gap-3 border-b pb-3">
-                      <TestTube className="h-5 w-5 text-purple-600 mt-0.5" />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">
-                            {(event.event_type?.replace(/_/g, ' ') || '').toUpperCase()}
-                          </Badge>
-                          {event.fraud_flag && (
-                            <Badge variant="destructive">Flagged</Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-gray-600 mt-1">{event.description}</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {new Date(event.timestamp).toLocaleString()}
-                        </p>
-                      </div>
+          <TabsContent value="overview" className="space-y-6 mt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="backdrop-blur-sm bg-card/80 rounded-3xl p-6 border border-primary/20 shadow-xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-red-500/10 p-3 rounded-2xl">
+                      <Stethoscope className="h-6 w-6 text-red-500" />
                     </div>
-                  ))}
+                    <h4 className="font-bold text-lg">Chronic Conditions</h4>
+                  </div>
+                  <div className="space-y-3">
+                    {history.chronicConditions.map((condition, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="flex items-center gap-3 p-3 bg-red-500/5 rounded-xl border border-red-500/20"
+                      >
+                        <Heart className="h-4 w-4 text-red-500" fill="currentColor" />
+                        <span className="font-medium">{condition}</span>
+                      </motion.div>
+                    ))}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="backdrop-blur-sm bg-card/80 rounded-3xl p-6 border border-primary/20 shadow-xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-orange-500/10 p-3 rounded-2xl">
+                      <AlertTriangle className="h-6 w-6 text-orange-500" />
+                    </div>
+                    <h4 className="font-bold text-lg">Known Allergies ⚠️</h4>
+                  </div>
+                  <div className="space-y-3">
+                    {history.allergies.map((allergy, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="p-3 bg-orange-500/10 rounded-xl border-2 border-orange-500/30"
+                      >
+                        <span className="font-semibold text-orange-900 dark:text-orange-100">⚠️ {allergy}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="backdrop-blur-sm bg-card/80 rounded-3xl p-6 border border-primary/20 shadow-xl">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="bg-blue-500/10 p-3 rounded-2xl">
+                      <Pill className="h-6 w-6 text-blue-500" />
+                    </div>
+                    <h4 className="font-bold text-lg">Current Medications 💊</h4>
+                  </div>
+                  <div className="space-y-3">
+                    {history.medications.map((med, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="flex items-center gap-3 p-3 bg-blue-500/5 rounded-xl border border-blue-500/20"
+                      >
+                        <Pill className="h-4 w-4 text-blue-500" />
+                        <span className="font-medium">{med}</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="backdrop-blur-sm bg-card/80 rounded-3xl p-6 border border-primary/20 shadow-xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="bg-purple-500/10 p-3 rounded-2xl">
+                    <Clock className="h-6 w-6 text-purple-500" />
+                  </div>
+                  <h4 className="font-bold text-xl">Recent Medical Activity 📊</h4>
+                </div>
+                <div className="space-y-4">
+                  <AnimatePresence>
+                    {history.events.slice(0, 10).map((event, idx) => (
+                      <motion.div
+                        key={event._id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        transition={{ delay: idx * 0.05 }}
+                        whileHover={{ x: 10, scale: 1.02 }}
+                      >
+                        <div className="flex items-start gap-4 p-4 rounded-2xl bg-muted/30 border border-primary/10 hover:border-primary/30 transition-all">
+                          <div className="bg-purple-500/10 p-3 rounded-xl">
+                            <TestTube className="h-5 w-5 text-purple-500" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 flex-wrap mb-2">
+                              <Badge className="bg-primary/20 text-primary border-primary/30">
+                                {(event.event_type?.replace(/_/g, ' ') || '').toUpperCase()}
+                              </Badge>
+                              {event.fraud_flag && (
+                                <Badge variant="destructive" className="gap-1">
+                                  <AlertTriangle className="h-3 w-3" />
+                                  Flagged
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm font-medium mb-1">{event.description}</p>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <Calendar className="h-3 w-3" />
+                              {new Date(event.timestamp).toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </motion.div>
           </TabsContent>
 
-          <TabsContent value="hospitals" className="space-y-4">
-            {history.cases.map((caseItem) => (
-              <Card key={caseItem._id}>
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="flex items-center gap-2">
-                        <Hospital className="h-5 w-5" />
-                        {caseItem.hospitalName}
-                      </CardTitle>
-                      <p className="text-sm text-gray-600 mt-1">{caseItem.location}</p>
-                    </div>
-                    <Badge variant={caseItem.status === 'ACTIVE' ? 'default' : 'secondary'}>
-                      {caseItem.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-600">Admission Date</p>
-                      <p className="font-medium">{new Date(caseItem.admissionDatetime).toLocaleDateString()}</p>
-                    </div>
-                    {caseItem.dischargeDatetime && (
-                      <div>
-                        <p className="text-sm text-gray-600">Discharge Date</p>
-                        <p className="font-medium">{new Date(caseItem.dischargeDatetime).toLocaleDateString()}</p>
+          <TabsContent value="hospitals" className="space-y-6 mt-8">
+            {history.cases.map((caseItem, idx) => (
+              <motion.div
+                key={caseItem._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                whileHover={{ y: -5, scale: 1.01 }}
+              >
+                <div className="relative overflow-hidden backdrop-blur-sm bg-card/80 rounded-3xl p-6 border border-primary/20 shadow-xl">
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full -mr-20 -mt-20" />
+                  
+                  <div className="relative">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-4">
+                        <div className="bg-primary/10 p-4 rounded-2xl">
+                          <Hospital className="h-8 w-8 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-bold flex items-center gap-2">
+                            {caseItem.hospitalName}
+                            <span className="text-xl">🏥</span>
+                          </h3>
+                          <p className="text-muted-foreground flex items-center gap-2 mt-1">
+                            📍 {caseItem.location}
+                          </p>
+                        </div>
                       </div>
-                    )}
-                    <div className="md:col-span-2">
-                      <p className="text-sm text-gray-600">Chief Complaint</p>
-                      <p className="font-medium">{caseItem.chiefComplaint}</p>
+                      <Badge 
+                        variant={caseItem.status === 'ACTIVE' ? 'default' : 'secondary'}
+                        className="text-sm px-4 py-1"
+                      >
+                        {caseItem.status}
+                      </Badge>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                      <div className="bg-muted/30 p-4 rounded-2xl">
+                        <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                          <Calendar className="h-4 w-4" />
+                          <p className="text-sm font-medium">Admission</p>
+                        </div>
+                        <p className="font-bold text-lg">
+                          {new Date(caseItem.admissionDatetime).toLocaleDateString()}
+                        </p>
+                      </div>
+                      
+                      {caseItem.dischargeDatetime && (
+                        <div className="bg-muted/30 p-4 rounded-2xl">
+                          <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                            <CheckCircle2 className="h-4 w-4" />
+                            <p className="text-sm font-medium">Discharge</p>
+                          </div>
+                          <p className="font-bold text-lg">
+                            {new Date(caseItem.dischargeDatetime).toLocaleDateString()}
+                          </p>
+                        </div>
+                      )}
+                      
+                      <div className="bg-muted/30 p-4 rounded-2xl md:col-span-2">
+                        <div className="flex items-center gap-2 text-muted-foreground mb-1">
+                          <Stethoscope className="h-4 w-4" />
+                          <p className="text-sm font-medium">Chief Complaint</p>
+                        </div>
+                        <p className="font-bold">{caseItem.chiefComplaint}</p>
+                      </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </motion.div>
             ))}
           </TabsContent>
 
-          <TabsContent value="medications" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Current Medications</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {history.medications.map((med, idx) => (
-                    <div key={idx} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <Pill className="h-5 w-5 text-blue-600" />
-                        <span className="font-medium">{med}</span>
-                      </div>
-                      <Badge>Active</Badge>
+          <TabsContent value="medications" className="space-y-6 mt-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+                <div className="backdrop-blur-sm bg-card/80 rounded-3xl p-6 border border-primary/20 shadow-xl">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="bg-blue-500/10 p-4 rounded-2xl">
+                      <Pill className="h-8 w-8 text-blue-500" />
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-red-600">Allergies</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {history.allergies.map((allergy, idx) => (
-                    <div key={idx} className="flex items-center gap-3 p-3 border border-red-200 rounded-lg bg-red-50">
-                      <span className="font-medium text-red-900">{allergy}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="events" className="space-y-4">
-            <div className="space-y-3">
-              {history.events.map((event) => (
-                <Card key={event._id}>
-                  <CardContent className="pt-6">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge variant="outline">
-                            {(event.event_type?.replace(/_/g, ' ') || '').toUpperCase()}
-                          </Badge>
-                          {event.fraud_flag && (
-                            <Badge variant="destructive">Fraud Alert</Badge>
-                          )}
+                    <h4 className="font-bold text-2xl">Active Medications 💊</h4>
+                  </div>
+                  <div className="space-y-3">
+                    {history.medications.map((med, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        whileHover={{ x: 5, scale: 1.02 }}
+                        className="flex items-center justify-between p-4 bg-blue-500/5 rounded-2xl border border-blue-500/20"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="bg-blue-500/10 p-2 rounded-xl">
+                            <Syringe className="h-5 w-5 text-blue-500" />
+                          </div>
+                          <span className="font-semibold">{med}</span>
                         </div>
-                        <p className="text-sm text-gray-900 mb-1">{event.description}</p>
-                        {event.performed_by && (
-                          <p className="text-xs text-gray-600">By: {event.performed_by}</p>
-                        )}
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-600">
-                          {new Date(event.timestamp).toLocaleDateString()}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {new Date(event.timestamp).toLocaleTimeString()}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                        <Badge className="bg-green-500/20 text-green-700 border-green-500/30">
+                          ✓ Active
+                        </Badge>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+
+              <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                <div className="backdrop-blur-sm bg-card/80 rounded-3xl p-6 border border-orange-500/30 shadow-xl">
+                  <div className="flex items-center gap-3 mb-6">
+                    <motion.div
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="bg-orange-500/10 p-4 rounded-2xl"
+                    >
+                      <AlertTriangle className="h-8 w-8 text-orange-500" />
+                    </motion.div>
+                    <h4 className="font-bold text-2xl text-orange-600 dark:text-orange-400">
+                      Critical Allergies ⚠️
+                    </h4>
+                  </div>
+                  <div className="space-y-3">
+                    {history.allergies.map((allergy, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: idx * 0.1 }}
+                        whileHover={{ scale: 1.05 }}
+                        className="p-4 bg-orange-500/10 rounded-2xl border-2 border-orange-500/40"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="bg-orange-500/20 p-2 rounded-xl">
+                            <Shield className="h-5 w-5 text-orange-600" />
+                          </div>
+                          <span className="font-bold text-orange-900 dark:text-orange-100">
+                            ⚠️ {allergy}
+                          </span>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
             </div>
           </TabsContent>
 
-          <TabsContent value="bills" className="space-y-4">
-            {history.bills.map((bill) => (
-              <Card key={bill._id}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">Bill #{bill._id.slice(-6)}</CardTitle>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold">₹{bill.totalAmount.toLocaleString()}</p>
-                      {bill.fraudScore !== undefined && bill.fraudScore > 0.3 && (
-                        <Badge variant="destructive" className="mt-1">
-                          Fraud Score: {(bill.fraudScore * 100).toFixed(0)}%
-                        </Badge>
+          <TabsContent value="events" className="space-y-4 mt-8">
+            {history.events.map((event, idx) => (
+              <motion.div
+                key={event._id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.05 }}
+                whileHover={{ x: 10, scale: 1.01 }}
+              >
+                <div className="backdrop-blur-sm bg-card/80 rounded-3xl p-6 border border-primary/20 shadow-lg">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-4 flex-1">
+                      <div className="bg-purple-500/10 p-3 rounded-2xl">
+                        <Activity className="h-6 w-6 text-purple-500" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 flex-wrap mb-3">
+                          <Badge className="bg-primary/20 text-primary border-primary/30 text-sm">
+                            {(event.event_type?.replace(/_/g, ' ') || '').toUpperCase()}
+                          </Badge>
+                          {event.fraud_flag && (
+                            <Badge variant="destructive" className="gap-1">
+                              <AlertTriangle className="h-3 w-3" />
+                              Fraud Alert 🚨
+                            </Badge>
+                          )}
+                        </div>
+                        <p className="font-medium text-lg mb-2">{event.description}</p>
+                        {event.performed_by && (
+                          <p className="text-sm text-muted-foreground flex items-center gap-2">
+                            <Stethoscope className="h-4 w-4" />
+                            By: {event.performed_by}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right bg-muted/30 p-3 rounded-2xl">
+                      <p className="text-sm font-semibold flex items-center gap-1">
+                        <Calendar className="h-4 w-4" />
+                        {new Date(event.timestamp).toLocaleDateString()}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        {new Date(event.timestamp).toLocaleTimeString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </TabsContent>
+
+          <TabsContent value="bills" className="space-y-6 mt-8">
+            {history.bills.map((bill, idx) => (
+              <motion.div
+                key={bill._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+                whileHover={{ y: -5, scale: 1.01 }}
+              >
+                <div className="relative overflow-hidden backdrop-blur-sm bg-card/80 rounded-3xl p-6 border border-primary/20 shadow-xl">
+                  <div className="absolute top-0 right-0 w-60 h-60 bg-primary/5 rounded-full -mr-30 -mt-30" />
+                  
+                  <div className="relative">
+                    <div className="flex items-center justify-between mb-6">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-green-500/10 p-4 rounded-2xl">
+                          <FileText className="h-8 w-8 text-green-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold text-muted-foreground">
+                            Bill #{bill._id.slice(-6)} 📄
+                          </h3>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {new Date(bill.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-3xl font-bold text-primary">₹{bill.totalAmount.toLocaleString()}</p>
+                        {bill.fraudScore !== undefined && bill.fraudScore > 0.3 && (
+                          <Badge variant="destructive" className="gap-1 mt-2">
+                            <AlertTriangle className="h-3 w-3" />
+                            Fraud Score: {(bill.fraudScore * 100).toFixed(0)}%
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="bg-muted/30 rounded-2xl p-4 space-y-3">
+                      {bill.items.slice(0, 3).map((item, itemIdx) => (
+                        <div key={itemIdx} className="flex justify-between items-center">
+                          <span className="font-medium">{item.description}</span>
+                          <span className="font-bold text-primary">₹{item.amount?.toLocaleString() || '0'}</span>
+                        </div>
+                      ))}
+                      {bill.items.length > 3 && (
+                        <p className="text-sm text-muted-foreground text-center pt-2 border-t border-primary/10">
+                          + {bill.items.length - 3} more items
+                        </p>
                       )}
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {bill.items.slice(0, 3).map((item, idx) => (
-                      <div key={idx} className="flex justify-between text-sm">
-                        <span>{item.description}</span>
-                        <span className="font-medium">₹{item.amount?.toLocaleString() || '0'}</span>
-                      </div>
-                    ))}
-                    {bill.items.length > 3 && (
-                      <p className="text-sm text-gray-500">+ {bill.items.length - 3} more items</p>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-500 mt-3">
-                    Date: {new Date(bill.createdAt).toLocaleDateString()}
-                  </p>
-                </CardContent>
-              </Card>
+                </div>
+              </motion.div>
             ))}
           </TabsContent>
         </Tabs>

@@ -7,9 +7,10 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Activity, ArrowLeft } from 'lucide-react';
+import { Activity, ArrowLeft, Hospital, MapPin, Calendar, Stethoscope, Heart, Sparkles, Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useCaseStore } from '@/store/caseStore';
+import { toast } from 'sonner';
 
 export default function NewCasePage() {
   const router = useRouter();
@@ -38,77 +39,108 @@ export default function NewCasePage() {
       if (response.ok) {
         const data = await response.json();
         addCase(data.case);
+        toast.success('Hospital case created successfully! 🏥');
         router.push(`/dashboard/cases/${data.case._id}`);
       } else {
-        alert('Failed to create case');
+        toast.error('Failed to create case');
       }
     } catch (error) {
       console.error('Error creating case:', error);
-      alert('An error occurred');
+      toast.error('An error occurred');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Header */}
-      <header className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <Activity className="h-8 w-8 text-blue-600" />
-            <span className="text-2xl font-bold text-blue-600">AYUSHYA</span>
-          </div>
+    <div className="min-h-screen bg-linear-to-br from-background via-primary/5 to-background py-8">
+      <div className="container mx-auto px-4 max-w-3xl">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
           <Link href="/dashboard">
-            <Button variant="ghost">
+            <Button variant="ghost" className="mb-4">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Dashboard
             </Button>
           </Link>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+          <div className="relative">
+            <div className="absolute -top-4 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+            
+            <div className="relative backdrop-blur-sm bg-card/80 rounded-3xl p-8 border border-primary/20 shadow-2xl">
+              <div className="flex items-center gap-4 mb-4">
+                <motion.div
+                  animate={{ rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="bg-primary/10 p-4 rounded-2xl"
+                >
+                  <Hospital className="h-10 w-10 text-primary" />
+                </motion.div>
+                <div>
+                  <h1 className="text-4xl font-bold bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                    Create New Case 🏥
+                  </h1>
+                  <p className="text-muted-foreground mt-2 flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" />
+                    Track your hospital journey from admission to discharge
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Form */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
         >
-          <h1 className="text-3xl font-bold mb-2">Create New Hospital Case</h1>
-          <p className="text-gray-600 mb-8">
-            Track your hospital journey from admission to discharge
-          </p>
-
-          <Card className="p-8">
+          <Card className="backdrop-blur-sm bg-card/80 rounded-3xl p-8 border border-primary/20 shadow-xl">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <Label htmlFor="hospitalName">Hospital Name *</Label>
+                <Label htmlFor="hospitalName" className="flex items-center gap-2 text-base font-semibold mb-2">
+                  <Hospital className="h-5 w-5 text-primary" />
+                  Hospital Name *
+                </Label>
                 <Input
                   id="hospitalName"
-                  placeholder="e.g., Apollo Hospitals"
+                  placeholder="e.g., Apollo Hospitals, Max Healthcare"
                   value={formData.hospitalName}
                   onChange={(e) =>
                     setFormData({ ...formData, hospitalName: e.target.value })
                   }
                   required
+                  className="h-12 rounded-2xl border-primary/20"
                 />
               </div>
 
               <div>
-                <Label htmlFor="location">Location *</Label>
+                <Label htmlFor="location" className="flex items-center gap-2 text-base font-semibold mb-2">
+                  <MapPin className="h-5 w-5 text-primary" />
+                  Location *
+                </Label>
                 <Input
                   id="location"
-                  placeholder="e.g., New Delhi"
+                  placeholder="City, State"
                   value={formData.location}
                   onChange={(e) =>
                     setFormData({ ...formData, location: e.target.value })
                   }
                   required
+                  className="h-12 rounded-2xl border-primary/20"
                 />
               </div>
 
               <div>
-                <Label htmlFor="admissionDatetime">Admission Date & Time *</Label>
+                <Label htmlFor="admissionDatetime" className="flex items-center gap-2 text-base font-semibold mb-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  Admission Date & Time *
+                </Label>
                 <Input
                   id="admissionDatetime"
                   type="datetime-local"
@@ -117,47 +149,66 @@ export default function NewCasePage() {
                     setFormData({ ...formData, admissionDatetime: e.target.value })
                   }
                   required
+                  className="h-12 rounded-2xl border-primary/20"
                 />
               </div>
 
               <div>
-                <Label htmlFor="chiefComplaint">Chief Complaint *</Label>
+                <Label htmlFor="chiefComplaint" className="flex items-center gap-2 text-base font-semibold mb-2">
+                  <Stethoscope className="h-5 w-5 text-primary" />
+                  Chief Complaint *
+                </Label>
                 <Input
                   id="chiefComplaint"
-                  placeholder="e.g., High fever and body ache"
+                  placeholder="Primary reason for admission"
                   value={formData.chiefComplaint}
                   onChange={(e) =>
                     setFormData({ ...formData, chiefComplaint: e.target.value })
                   }
                   required
+                  className="h-12 rounded-2xl border-primary/20"
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  Main reason for hospital visit
+              </div>
+
+              <div className="bg-blue-50/50 border border-blue-200/50 rounded-2xl p-4">
+                <p className="text-sm text-blue-900 flex items-start gap-2">
+                  <Heart className="h-4 w-4 mt-0.5 shrink-0" fill="currentColor" />
+                  <span>
+                    <strong>Tip:</strong> Be as detailed as possible. This information helps us track your entire medical journey and ensures transparency in your treatment 💙
+                  </span>
                 </p>
               </div>
 
-              <div className="flex gap-4">
-                <Button type="submit" disabled={loading} className="flex-1">
-                  {loading ? 'Creating...' : 'Create Case'}
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Button 
+                  type="submit" 
+                  disabled={loading} 
+                  className="w-full h-12 text-base rounded-2xl gap-2"
+                  size="lg"
+                >
+                  {loading ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Activity className="h-5 w-5" />
+                      </motion.div>
+                      Creating Case...
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-5 w-5" />
+                      Create Hospital Case 🏥
+                    </>
+                  )}
                 </Button>
-                <Link href="/dashboard" className="flex-1">
-                  <Button type="button" variant="outline" className="w-full">
-                    Cancel
-                  </Button>
-                </Link>
-              </div>
+              </motion.div>
             </form>
           </Card>
-
-          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h3 className="font-semibold text-blue-900 mb-2">What's Next?</h3>
-            <ul className="text-sm text-blue-800 space-y-1">
-              <li>• Upload medical bills for fraud detection</li>
-              <li>• View Medical BlackBox timeline</li>
-              <li>• Get second opinion on treatment</li>
-              <li>• Generate patient summary PDF</li>
-            </ul>
-          </div>
         </motion.div>
       </div>
     </div>
