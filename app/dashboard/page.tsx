@@ -23,7 +23,7 @@ import {
   MapPin,
   DollarSign,
   Users,
-  Pill,
+
   Stethoscope,
   AlertCircle,
   CheckCircle2,
@@ -359,7 +359,7 @@ export default function DashboardPage() {
                     { href: '/dashboard/prescription-reader', icon: Camera, label: 'Scan Rx', color: 'from-orange-600 to-orange-400' },
                     { href: '/dashboard/insurance', icon: Shield, label: 'Insurance', color: 'from-emerald-600 to-emerald-400' },
                     { href: '/dashboard/admin', icon: Activity, label: 'Analytics', color: 'from-pink-600 to-pink-400' },
-                    { href: '/dashboard', icon: Pill, label: 'Meds', color: 'from-indigo-600 to-indigo-400' },
+
                   ].map((action, idx) => (
                     <Link key={action.href} href={action.href}>
                       <motion.div

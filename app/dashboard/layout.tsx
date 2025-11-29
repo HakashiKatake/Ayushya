@@ -11,7 +11,7 @@ import {
   Camera,
   Settings,
   Heart,
-  Pill,
+
   Menu
 } from 'lucide-react';
 import { useState } from 'react';
@@ -21,7 +21,7 @@ const navItems = [
   { href: '/dashboard/medical-history', label: 'History', icon: FileText },
   { href: '/dashboard/insurance', label: 'Insurance', icon: Shield },
   { href: '/dashboard/prescription-reader', label: 'Scan Rx', icon: Camera },
-  { href: '/dashboard', label: 'Meds', icon: Pill }, // Using same href for demo
+
   { href: '/dashboard/admin', label: 'Admin', icon: Settings },
 ];
 

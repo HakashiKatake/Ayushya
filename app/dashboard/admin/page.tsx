@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Settings, Upload, Play, AlertTriangle, CheckCircle, Activity, FileText, Database, Zap, Heart, Sparkles, TrendingDown
+import {
+  Settings, Upload, Play, AlertTriangle, CheckCircle, Activity, FileText, Database, Zap, Heart, Sparkles, TrendingDown, BarChart3, Building2, HeartPulse, Microscope, Pill, AlertOctagon, Siren, BookOpen
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,7 @@ export default function AdminPage() {
   const handleLoadMockData = () => {
     setLoading(true);
     setTimeout(() => {
-      setResult({ success: true, message: `Loaded ${eventsData.length} mock events successfully! 🎉`, count: eventsData.length });
+      setResult({ success: true, message: `Loaded ${eventsData.length} mock events successfully!`, count: eventsData.length });
       setLoading(false);
       toast.success('Mock data loaded successfully!');
     }, 1000);
@@ -49,7 +49,7 @@ export default function AdminPage() {
       const scenario = fraudScenarios.find(s => s.id === selectedScenario);
       setResult({
         success: true,
-        message: `Triggered fraud scenario: ${scenario?.name} ⚠️`,
+        message: `Triggered fraud scenario: ${scenario?.name}`,
         scenario: scenario?.description,
         fraudScore: Math.random() * 0.5 + 0.5
       });
@@ -64,7 +64,7 @@ export default function AdminPage() {
     setTimeout(() => {
       setResult({
         success: true,
-        message: 'Event added successfully! ✅',
+        message: 'Event added successfully!',
         event: { type: eventType, description, timestamp: new Date().toISOString() }
       });
       setLoading(false);
@@ -87,7 +87,7 @@ export default function AdminPage() {
         >
           <div className="absolute -top-4 -left-4 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
           <div className="absolute -bottom-4 -right-4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          
+
           <div className="relative backdrop-blur-sm bg-card/80 rounded-3xl p-8 border border-primary/20 shadow-2xl">
             <div className="flex items-center gap-4">
               <motion.div
@@ -99,7 +99,7 @@ export default function AdminPage() {
               </motion.div>
               <div>
                 <h1 className="text-4xl font-bold bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                  Admin Simulator ⚡
+                  Admin Simulator
                 </h1>
                 <p className="text-muted-foreground mt-2 flex items-center gap-2">
                   <Sparkles className="h-4 w-4" />
@@ -117,7 +117,7 @@ export default function AdminPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-xl">
                   <Database className="h-6 w-6 text-blue-500" />
-                  Load Mock Events 📊
+                  Load Mock Events
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -127,11 +127,11 @@ export default function AdminPage() {
                 <div className="bg-linear-to-br from-blue-500/10 to-blue-600/10 p-4 rounded-2xl border border-blue-500/20">
                   <p className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">Includes:</p>
                   <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1">
-                    <li>• Admission and discharge events 🏥</li>
-                    <li>• Vital signs monitoring 💓</li>
-                    <li>• Lab tests and imaging 🔬</li>
-                    <li>• Medications and procedures 💊</li>
-                    <li>• Events with fraud flags ⚠️</li>
+                    <li className="flex items-center gap-2"><Building2 className="h-3 w-3" /> Admission and discharge events</li>
+                    <li className="flex items-center gap-2"><HeartPulse className="h-3 w-3" /> Vital signs monitoring</li>
+                    <li className="flex items-center gap-2"><Microscope className="h-3 w-3" /> Lab tests and imaging</li>
+                    <li className="flex items-center gap-2"><Pill className="h-3 w-3" /> Medications and procedures</li>
+                    <li className="flex items-center gap-2"><AlertOctagon className="h-3 w-3" /> Events with fraud flags</li>
                   </ul>
                 </div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -150,7 +150,7 @@ export default function AdminPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-xl">
                   <Zap className="h-6 w-6 text-red-500" />
-                  Trigger Fraud Scenario 🚨
+                  Trigger Fraud Scenario
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -199,7 +199,7 @@ export default function AdminPage() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-xl">
                   <Activity className="h-6 w-6 text-green-500" />
-                  Add Individual Event ✨
+                  Add Individual Event
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -257,7 +257,7 @@ export default function AdminPage() {
                     {result.scenario && <p className="text-sm text-muted-foreground mb-2">{result.scenario}</p>}
                     {result.fraudScore && (
                       <Badge variant="destructive" className="text-sm">
-                        ⚠️ Fraud Score: {(result.fraudScore * 100).toFixed(0)}%
+                        <AlertTriangle className="h-3 w-3 inline mr-1" /> Fraud Score: {(result.fraudScore * 100).toFixed(0)}%
                       </Badge>
                     )}
                     {result.event && (
@@ -282,17 +282,17 @@ export default function AdminPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-xl mb-2 flex items-center gap-2">
-                    Admin Simulator Guide 📖
+                    <BookOpen className="h-5 w-5 inline mr-2" />Admin Simulator Guide
                   </h3>
                   <p className="text-sm text-muted-foreground mb-3">
                     This admin panel allows you to simulate hospital events and test fraud detection:
                   </p>
                   <ul className="text-sm text-muted-foreground space-y-2 list-disc list-inside">
-                    <li><strong>Load Mock Events:</strong> Import all predefined events from mock data 📊</li>
-                    <li><strong>Trigger Fraud Scenarios:</strong> Test specific fraud patterns ��</li>
-                    <li><strong>Add Individual Events:</strong> Create custom events with specific details ✨</li>
-                    <li>All simulated events can be viewed in the Medical BlackBox timeline 🔬</li>
-                    <li>Fraud scenarios will automatically calculate fraud scores ⚡</li>
+                    <li className="flex items-start gap-2"><BarChart3 className="h-4 w-4 mt-0.5 flex-shrink-0" /><span><strong>Load Mock Events:</strong> Import all predefined events from mock data</span></li>
+                    <li className="flex items-start gap-2"><Siren className="h-4 w-4 mt-0.5 flex-shrink-0" /><span><strong>Trigger Fraud Scenarios:</strong> Test specific fraud patterns</span></li>
+                    <li className="flex items-start gap-2"><Sparkles className="h-4 w-4 mt-0.5 flex-shrink-0" /><span><strong>Add Individual Events:</strong> Create custom events with specific details</span></li>
+                    <li className="flex items-start gap-2"><Microscope className="h-4 w-4 mt-0.5 flex-shrink-0" /><span>All simulated events can be viewed in the Medical BlackBox timeline</span></li>
+                    <li className="flex items-start gap-2"><Zap className="h-4 w-4 mt-0.5 flex-shrink-0" /><span>Fraud scenarios will automatically calculate fraud scores</span></li>
                   </ul>
                 </div>
               </div>
